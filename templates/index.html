@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Blogs</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=font1|font2|etc" type="text/css">
+  </head>
+  <body>
+
+  {% for i in range(10) %}
+  <h5> Article <h5> 
+  <p> A few decades ago, when you wanted to learn something new it typically meant spending a couple of evenings a week at a local school, taking a photography or bookkeeping class from a bored night school instructor.</p>
+  <br>
+  <h5> by author <h5> 
+  <h5> timestamp <h5>
+  
+  <h5> {{ip}} </h5>
+  <a href="{{url_for('edit_blog', blog_id = id)}}">edit blog</a>
+  <a href="{{url_for('delete_blog', blog_id = id)}}">delete blog </a> 
+  {% endfor %}
+  
+  </body>
+</html>
