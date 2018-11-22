@@ -35,13 +35,22 @@ from flask import Response, session as login_session
 app = Flask(__name__)
 
 users = [{'name': 'Yasser', 'id': '1',
-          'username': 'yasserd99', 'email': 'Yasserd99@gmial.com'}]
+          'username': 'yasserd99', 'email': 'Yasserd99@gmial.com'}, {'name': 'Fisal', 'id': '2',
+                                                                     'username': 'Faisal2', 'email': 'faisal@gmial.com'}]
+
+
+user = {'name': 'Yasser', 'id': '1',
+        'username': 'yasserd99', 'email': 'Yasserd99@gmial.com'}
+
+post = {'id': '1', 'uid': '1', 'title': 'How to wake up early',
+        'content': 'to wake up early you need to to many things, like setting up the alarm clock, forming an intention to wake up early, cold shower, oh never mind', 'type': 'productivity', 'status': 'available',  'time': '21/Nov/2018'}
+posts = [post, post, post]
 
 
 @app.route('/')
 @app.route('/blogs')
 def main():
-    return render_template('index.html', ip=request.remote_addr, id=10)
+    return render_template('index.html', ip=request.remote_addr, id=10, posts=posts)
 
 
 @app.route('/users')
