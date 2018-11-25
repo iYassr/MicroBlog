@@ -79,9 +79,20 @@ def get_user_blogs():
     pass
 
 
-@app.route('/blog/new')
+@app.route('/blog/new', methods=['GET', 'POST'])
 def new_blog():
-    return render_template('new_blog.html')
+    if request.method == 'GET':
+        log('200')
+        return render_template('new_blog.html')
+    if request.method == 'POST':
+        log('302')
+        uid = request.form.get('uid')
+        title = request.form.get('title')
+        content = request.form.get('content')
+        new_post = Post(uid=1, title=title, content=content)
+        session.add(new_post)
+        session.commit()
+        return redirect(url_for('main'))
 
 
 @app.route('/blog/<int:blog_id>/edit')
