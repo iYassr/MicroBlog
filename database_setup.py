@@ -2,6 +2,9 @@ from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
+from sqlalchemy import DateTime
+from sqlalchemy.sql import func
+import datetime
 
 Base = declarative_base()
 
@@ -13,16 +16,30 @@ class User(Base):
     username = Column(String(30), nullable=False)
     name = Column(String(250), nullable=False)
     email = Column(String(250), nullable=False)
+    password = Column(String(250), nullable=False)
     avatar = Column(String(250))
     bio = Column(String(250))
     phone_number = Column(String(14))
+    time_created = Column(DateTime(timezone=True), server_default=func.now())
+
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+        return {
+            'name': self.name,
+            'id': self.id,
+            'username': self.username,
+            'bio': self.bio,
+            'phone_number': self.phone_number,
+            'email': self.email,
+            'time_created': self.time_created,
+        }
 
 
 class Post(Base):
     __tablename__ = 'post'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
     uid = Column(Integer, ForeignKey('user.id'))
     title = Column(String(250), nullable=False)
     content = Column(String(5000), nullable=False)
@@ -37,7 +54,6 @@ class Post(Base):
     def serialize(self):
         """Return object data in easily serializeable format"""
         return {
-            'name': self.name,
             'id': self.id,
             'uid': self.uid,
             'title': self.title,
@@ -51,10 +67,10 @@ class Post(Base):
 class Log(Base):
     __tablename__ = 'menu_item'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, nullable=False)
     ip = Column(Integer, nullable=False)
     url = Column(String(300), nullable=False)
-    response = Column(String(200), nullable=False)
+    response = Column(String(200) )
 
     @property
     def serialize(self):
