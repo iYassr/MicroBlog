@@ -18,6 +18,16 @@ image
 type
 status
 
+comments
+ID # PK
+PID # FK(posts) 
+UID # FK(users)
+comment
+time
+
+
+
+
 logs
 ip 
 url
@@ -32,7 +42,7 @@ from flask import Flask, render_template, url_for, request, jsonify, redirect
 from flask import Response, session as login_session
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, User, Post, Log
+from database_setup import Base, User, Post, Comment, CommentLikes, PostLikes, Log
 
 app = Flask(__name__)
 

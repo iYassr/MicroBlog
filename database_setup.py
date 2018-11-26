@@ -12,8 +12,8 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = 'user'
 
-    id = Column(Integer, primary_key=True)
-    username = Column(String(30), nullable=False)
+    id = Column(Integer, primary_key=True, nullable=True)
+    username = Column(String(30), primary_key=True,  nullable=False)
     name = Column(String(250), nullable=False)
     email = Column(String(250), nullable=False)
     password = Column(String(250), nullable=False)
@@ -48,6 +48,9 @@ class Post(Base):
     time_created = Column(DateTime(timezone=True), server_default=func.now())
     time_updated = Column(DateTime(timezone=True), onupdate=func.now())
 
+    # Post can have many comments, while a comment can have only one post.
+    # One to many
+    #comment = relationship(Comment)
     user = relationship(User)
 
     @property
@@ -64,13 +67,39 @@ class Post(Base):
         }
 
 
+class Comment(Base):
+    __tablename__ = 'comment'
+    id = Column(Integer, primary_key=True)
+    pid = Column(Integer,  ForeignKey('post.id'), nullable=False)
+    uid = Column(Integer, ForeignKey('user.id'), nullable=False)
+    comment = Column(String(300), nullable=False)
+    time_created = Column(DateTime(timezone=True), server_default=func.now())
+    time_updated = Column(DateTime(timezone=True), onupdate=func.now())
+
+
+class CommentLikes(Base):
+    __tablename__ = 'comment_likes'
+    id = Column(Integer, primary_key=True)
+    cid = Column(Integer, ForeignKey('comment.id'), nullable=False)
+    uid = Column(Integer, ForeignKey('user.id'))
+    up_down = Column(String(4), nullable=False)
+
+
+class PostLikes(Base):
+    __tablename__ = 'post_likes'
+    id = Column(Integer, primary_key=True)
+    pid = Column(Integer, ForeignKey('post.id'), nullable=False)
+    uid = Column(Integer, ForeignKey('user.id'))
+    up_down = Column(String(4), nullable=False)
+
+
 class Log(Base):
-    __tablename__ = 'menu_item'
+    __tablename__ = 'log'
 
     id = Column(Integer, primary_key=True, nullable=False)
     ip = Column(Integer, nullable=False)
     url = Column(String(300), nullable=False)
-    response = Column(String(200) )
+    response = Column(String(200))
 
     @property
     def serialize(self):
@@ -84,6 +113,4 @@ class Log(Base):
 
 
 engine = create_engine('sqlite:///BlogDB.db')
-
-
 Base.metadata.create_all(engine)
