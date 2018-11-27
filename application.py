@@ -1,6 +1,7 @@
 '''
 https://dba.stackexchange.com/questions/145222/structure-a-database-for-a-blog
 '''
+
 from flask import Flask, render_template, url_for, request, jsonify, redirect
 from flask import Response, session as login_session
 from sqlalchemy import create_engine, asc
@@ -96,16 +97,26 @@ def logoff():
 @app.route('/users')
 def get_users():
     log('200')
+    users = session.query(User).all()
+    return render_template('users.html', users=users)
 
 
-@app.route('/user')
-def get_user():
+@app.route('/user/<int:id>')
+def get_user(id):
+    user = session.query(User).filter_by(id=id)
     log('200')
+    return 'to be implemented'
 
 
-@app.route('/blog/<string:user>')
-def get_user_blogs():
-    pass
+@app.route('/blog/<string:username>')
+def get_user_blogs(username):
+    user_blogs = None
+
+    try:
+        user_blogs = session.query(Post,User).filter(User.username == username).first()
+    except Exception:
+        pass
+    return user_blogs.content
 
 
 @app.route('/blog/new', methods=['GET', 'POST'])
