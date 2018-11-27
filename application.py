@@ -1,42 +1,5 @@
 '''
-users 
-id
-username 
-name
-email
-avatar
-bio
-phonenumber 
-
-posts
-id
-uid
-title
-content
-time
-image
-type
-status
-
-comments
-ID # PK
-PID # FK(posts) 
-UID # FK(users)
-comment
-time
-
-
-
-
-logs
-ip 
-url
-timestamp 
-
 https://dba.stackexchange.com/questions/145222/structure-a-database-for-a-blog
-
-
-
 '''
 from flask import Flask, render_template, url_for, request, jsonify, redirect
 from flask import Response, session as login_session
@@ -44,19 +7,8 @@ from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Post, Comment, CommentLikes, PostLikes, Log
 
+
 app = Flask(__name__)
-
-users = [{'name': 'Yasser', 'id': '1',
-          'username': 'yasserd99', 'email': 'Yasserd99@gmial.com'}, {'name': 'Fisal', 'id': '2',
-                                                                     'username': 'Faisal2', 'email': 'faisal@gmial.com'}]
-
-
-user = {'name': 'Yasser', 'id': '1',
-        'username': 'yasserd99', 'email': 'Yasserd99@gmial.com'}
-
-post = {'id': '1', 'uid': '1', 'title': 'How to wake up early',
-        'content': 'to wake up early you need to to many things, like setting up the alarm clock, forming an intention to wake up early, cold shower, oh never mind', 'type': 'productivity', 'status': 'available',  'time': '21/Nov/2018'}
-posts = [post, post, post]
 
 # Connect to Database and create database session
 engine = create_engine('sqlite:///BlogDB.db')
@@ -71,7 +23,7 @@ session = DBSession()
 def main():
     log('200')
     posts = session.query(Post).all()
-    return render_template('index.html', ip=request.remote_addr, id=10, posts=posts)
+    return render_template('index.html', posts=posts)
 
 
 @app.route('/users')
@@ -105,14 +57,17 @@ def new_blog():
         return redirect(url_for('main'))
 
 
-@app.route('/blog/<int:blog_id>/edit')
-def edit_blog(id):
+@app.route('/blog/<int:post_id>/edit')
+def edit_blog(post_id):
     pass
 
 
-@app.route('/blog/<int:blog_id>/delete')
-def delete_blog():
-    pass
+@app.route('/blog/<int:post_id>/delete')
+def delete_blog(post_id):
+    deleted_post = session.query(Post).filter_by(id=post_id).one()
+    session.delete(deleted_post)
+    session.commit()
+    return redirect(url_for('main'))
 
 
 @app.route('/login')
@@ -156,4 +111,8 @@ def log(response):
     response = response
     new_log = Log(ip=ip, url=url, response=response)
     session.add(new_log)
-    session.commit()
+    try:
+        session.commit()
+    except:
+        session.rollback()
+        raise
