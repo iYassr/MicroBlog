@@ -12,8 +12,7 @@
   <p> {{post.content}} </p>
   <br>
   <h5> author <h5> 
-  <h5> {{post.time}} <h5>
-
+  <h5> {{post.time_created}} <h5>
   <h5> {{ip}} </h5>
   <a href="{{url_for('edit_blog', blog_id = post.id)}}">edit blog</a>
   <a href="{{url_for('delete_blog', blog_id = post.id)}}">delete blog </a> 
