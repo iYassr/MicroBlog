@@ -17,13 +17,80 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+app.secret_key = 'imnotthatevel'
+
 
 @app.route('/')
 @app.route('/blogs')
 def main():
     log('200')
     posts = session.query(Post).all()
-    return render_template('index.html', posts=posts)
+    username = 'Not Logged IN'
+    if 'username' in login_session:
+        username = login_session['username']
+        email = login_session['email']
+        user_id = login_session['id']
+
+    return render_template('index.html', posts=posts, username=username)
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'GET':
+        return render_template('register.html')
+    if request.method == 'POST':
+        username = request.form.get('username')
+        name = request.form.get('name')
+        email = request.form.get('email')
+        bio = request.form.get('bio')
+        phonenumber = request.form.get('phonenumber')
+        password1 = request.form.get('password1')
+        password2 = request.form.get('password2')
+
+        new_user = User(name=name, username=username, email=email,
+                        bio=bio, phone_number=phonenumber, password=password1)
+        session.add(new_user)
+        session.commit()
+        log('200')
+        app.logger.info('username: {} , email {} , name {} , password {} , phone {}'.format(
+            username, name, email, password1, phonenumber))
+
+        return redirect(url_for('main'))
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        user_exists = None
+        try:
+            user_exists = session.query(User).filter_by(
+                username=username, password=password).one()
+        except:
+            pass
+
+        if user_exists:
+            login_session['username'] = user_exists.username
+            login_session['id'] = user_exists.id
+            login_session['email'] = user_exists.email
+            login_session['bio'] = user_exists.bio
+            return redirect(url_for('main'))
+        else:
+            return 'wrong username or password'
+
+
+@app.route('/logoff', methods=['GET', 'POST'])
+def logoff():
+    if request.method == 'GET':
+        if 'username' in login_session:
+            login_session.pop('username')
+            return 'youve been logged off'
+        else:
+            return 'youre not logged on'
 
 
 @app.route('/users')
@@ -68,35 +135,6 @@ def delete_blog(post_id):
     session.delete(deleted_post)
     session.commit()
     return redirect(url_for('main'))
-
-
-@app.route('/login')
-def login():
-    pass
-
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'GET':
-        return render_template('register.html')
-    if request.method == 'POST':
-        username = request.form.get('username')
-        name = request.form.get('name')
-        email = request.form.get('email')
-        bio = request.form.get('bio')
-        phonenumber = request.form.get('phonenumber')
-        password1 = request.form.get('password1')
-        password2 = request.form.get('password2')
-
-        new_user = User(name=name, username=username, email=email,
-                        bio=bio, phone_number=phonenumber, password=password1)
-        session.add(new_user)
-        session.commit()
-        log('200')
-        app.logger.info('username: {} , email {} , name {} , password {} , phone {}'.format(
-            username, name, email, password1, phonenumber))
-
-        return redirect(url_for('main'))
 
 
 @app.errorhandler(404)
