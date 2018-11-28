@@ -12,7 +12,7 @@
   <h5> {{post.title}}  <h5> 
   <p> {{post.content}} </p>
   <br>
-  <h5> author <h5> 
+  <h5> {{post.uid}} <h5> 
   <h5> {{post.time_created}} <h5>
   <h5> {{ip}} </h5>
   <a href="{{url_for('edit_blog', post_id = post.id)}}">edit blog</a>
