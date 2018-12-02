@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <title>Blogs</title>
   <link rel="stylesheet" href="//fonts.googleapis.com/css?family=font1|font2|etc" type="text/css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
   </head>
   <body>
 
-  <h5> Welcome MR. {{username}} </h5>
+      <h5 class="alert alert-primary"> Welcome MR. {{username}} </h5>
   {% for post in posts %}
   <h5> {{post.title}}  <h5> 
   <p> {{post.content}} </p>

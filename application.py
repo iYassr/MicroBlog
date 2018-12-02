@@ -41,8 +41,10 @@ def main():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
+        log('200')
         return render_template('register.html')
     if request.method == 'POST':
+        log('302')
         username = request.form.get('username')
         name = request.form.get('name')
         email = request.form.get('email')
@@ -65,8 +67,10 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
+        log('200')
         return render_template('login.html')
     if request.method == 'POST':
+        log('302')
         username = request.form.get('username')
         password = request.form.get('password')
 
@@ -90,6 +94,7 @@ def login():
 @app.route('/logoff', methods=['GET', 'POST'])
 def logoff():
     if request.method == 'GET':
+        log('302')
         if 'username' in login_session:
             login_session.pop('username')
             return 'youve been logged off'
@@ -168,6 +173,7 @@ def edit_blog(post_id):
 
 @app.route('/blog/<int:post_id>/delete')
 def delete_blog(post_id):
+    log('302')
     deleted_post = session.query(Post).filter_by(id=post_id).one()
     session.delete(deleted_post)
     session.commit()
