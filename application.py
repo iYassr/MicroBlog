@@ -129,19 +129,41 @@ def new_blog():
         return render_template('new_blog.html')
     if request.method == 'POST':
         log('302')
-        uid = request.form.get('uid')
+
+        if 'username' not in login_session:
+            return redirect(url_for('login'))
+
+        uid = login_session['id']
         title = request.form.get('title')
         content = request.form.get('content')
-        new_post = Post(uid=1, title=title, content=content)
+        new_post = Post(uid=uid, title=title, content=content)
         session.add(new_post)
         session.commit()
         return redirect(url_for('main'))
 
 
 # todo
-@app.route('/blog/<int:post_id>/edit')
+@app.route('/blog/<int:post_id>/edit', methods=['GET', 'POST'])
 def edit_blog(post_id):
-    pass
+    if request.method == 'GET':
+        log('200')
+        old_post = session.query(Post).filter_by(id=post_id).first()
+        return render_template('edit_blog.html', post=old_post)
+    if request.method == 'POST':
+        log('302')
+
+        if 'username' not in login_session:
+            return redirect(url_for('login'))
+
+        uid = login_session['id']
+        title = request.form.get('title')
+        content = request.form.get('content')
+        old_post = session.query(Post).filter_by(id=post_id).one()
+        old_post.content = content
+        old_post.title = title
+        session.add(old_post)
+        session.commit()
+        return redirect(url_for('main'))
 
 
 @app.route('/blog/<int:post_id>/delete')
