@@ -7,12 +7,15 @@ from flask import Response, session as login_session
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Post, Comment, CommentLikes, PostLikes, Log
+import logging
+logging.basicConfig()
+logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 
 app = Flask(__name__)
 
 # Connect to Database and create database session
-engine = create_engine('sqlite:///BlogDB.db')
+engine = create_engine('sqlite:///BlogDB.db', echo=True)
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
@@ -110,13 +113,13 @@ def get_user(id):
 
 @app.route('/blog/<string:username>')
 def get_user_blogs(username):
-    user_blogs = None
-
+    posts = None
     try:
-        user_blogs = session.query(Post,User).filter(User.username == username).first()
+        posts = session.execute(
+            'select * from post,user on post.uid=user.id where user.username="{}"'.format(username)).fetchall()
     except Exception:
-        pass
-    return user_blogs.content
+        session.rollback()
+    return render_template('index.html', posts=posts)
 
 
 @app.route('/blog/new', methods=['GET', 'POST'])
@@ -135,6 +138,7 @@ def new_blog():
         return redirect(url_for('main'))
 
 
+# todo
 @app.route('/blog/<int:post_id>/edit')
 def edit_blog(post_id):
     pass
