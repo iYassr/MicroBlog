@@ -31,7 +31,7 @@ def main():
     posts = None
     try:
         posts = session.execute(
-            'select * from post,user on post.uid=user.id').fetchall()
+            'select post.title,post.time_created,post.content, post.id, user.name from post inner join user on post.uid=user.id left join post_likes on post_likes.pid = post.id').fetchall()
     except Exception:
         pass
 
