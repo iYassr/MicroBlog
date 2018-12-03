@@ -9,17 +9,31 @@
   </head>
   <body>
 
-      <h5 class="alert alert-primary"> Welcome MR. {{username}} </h5>
+  <div class="container">
+      <h5 class="alert alert-secondary"> Welcome MR. {{username}} </h5>
+    
   {% for post in posts %}
-  <h5> {{post.title}}  <h5> 
-  <p> {{post.content}} </p>
-  <br>
-  <h5> {{post.uid}} <h5> 
-  <h5> {{post.time_created}} <h5>
-  <h5> {{ip}} </h5>
-  <a href="{{url_for('edit_blog', post_id = post.id)}}">edit blog</a>
-  <a href="{{url_for('delete_blog', post_id = post.id)}}">delete blog </a> 
-  {% endfor %}
-  
+      <div class="card my-2">
+  <div class="card-header">
+  {{post.title}}
+  </div>
+  <div class="card-body">
+    <blockquote class="blockquote mb-0">
+      <p>{{post.content}}</p>
+      <footer class="blockquote-footer"> written by <cite title="Source Title">{{post.name}}</cite></footer>
+    </blockquote>
+  </div>
+  <div class="card-footer">
+      <small class="text-muted">{{post.time_created}}</small>
+  <button class="btn btn-link"><a href="{{url_for('edit_blog', post_id = post.id)}}"><img src={{ url_for('static',filename='pencil.svg') }} alt="icon name"></a></button>
+  <button class="btn btn-link"> <a href="{{url_for('delete_blog', post_id = post.id)}}"><img src={{ url_for('static',filename='trashcan.svg') }} alt="icon name">
+</a> </button>
+ 
+    </div>
+</div>
+
+{% endfor %}
+
+</div> 
   </body>
 </html>

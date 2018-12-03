@@ -28,8 +28,14 @@ app.secret_key = 'imnotthatevel'
 @app.route('/blogs')
 def main():
     log('200')
-    posts = session.query(Post).all()
-    username = 'Not Logged IN'
+    posts = None
+    try:
+        posts = session.execute(
+            'select * from post,user on post.uid=user.id').fetchall()
+    except Exception:
+        pass
+
+    username = 'Incognito'
     if 'username' in login_session:
         username = login_session['username']
         email = login_session['email']
