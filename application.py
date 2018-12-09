@@ -153,7 +153,6 @@ def new_blog():
         return redirect(url_for('main'))
 
 
-# todo
 @app.route('/blog/<int:post_id>/edit', methods=['GET', 'POST'])
 def edit_blog(post_id):
     if request.method == 'GET':
