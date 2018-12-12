@@ -100,6 +100,7 @@ def login():
             pass
 
         if user_exists:
+            login_session['name'] = user_exists.username
             login_session['username'] = user_exists.username
             login_session['id'] = user_exists.id
             login_session['email'] = user_exists.email
@@ -115,6 +116,8 @@ def logoff():
         log('302')
         if 'username' in login_session:
             login_session.pop('username')
+            [login_session.pop(key) for key in list(
+                login_session.keys()) if key != '_flashes']
             return 'youve been logged off'
         else:
             return 'youre not logged on'
@@ -177,6 +180,8 @@ def edit_blog(post_id):
         if 'username' not in login_session:
             return redirect(url_for('login'))
 
+    post_creator = session.query(Post).filter_by(id=post_id).one()
+    if login_session['id'] == post_creator.uid:
         uid = login_session['id']
         title = request.form.get('title')
         content = request.form.get('content')
@@ -186,14 +191,20 @@ def edit_blog(post_id):
         session.add(old_post)
         session.commit()
         return redirect(url_for('main'))
+    else: 
+        return 'youre not allowed to edit other peoples posts'
 
 
 @app.route('/blog/<int:post_id>/delete')
 def delete_blog(post_id):
     log('302')
-    deleted_post = session.query(Post).filter_by(id=post_id).one()
-    session.delete(deleted_post)
-    session.commit()
+    post_creator = session.query(Post).filter_by(id=post_id).one()
+    if login_session['id'] == post_creator.uid:
+        deleted_post = session.query(Post).filter_by(id=post_id).one()
+        session.delete(deleted_post)
+        session.commit()
+    else:
+        return 'you dont have the right to delete other users posts'
     return redirect(url_for('main'))
 
 
