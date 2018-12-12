@@ -7,12 +7,18 @@ from flask import Response, session as login_session
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Post, Comment, CommentLikes, PostLikes, Log
+from werkzeug import secure_filename
 import logging
+from os import path
 logging.basicConfig()
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 
 app = Flask(__name__)
+UPLOAD_FOLDER = path.basename('uploads')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+
 
 # Connect to Database and create database session
 engine = create_engine('sqlite:///BlogDB.db', echo=True)
@@ -51,16 +57,21 @@ def register():
         return render_template('register.html')
     if request.method == 'POST':
         log('302')
+        avatar = 'default'
         username = request.form.get('username')
         name = request.form.get('name')
         email = request.form.get('email')
         bio = request.form.get('bio')
-        phonenumber = request.form.get('phonenumber')
+        phonenumber = request.form.get('phone_number')
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
+        if 'avatar' in request.files:
+            file = request.files['avatar']
+            file.save(path.join(app.config['UPLOAD_FOLDER'], username))
+            avatar = username
 
         new_user = User(name=name, username=username, email=email,
-                        bio=bio, phone_number=phonenumber, password=password1)
+                        bio=bio, phone_number=phonenumber, password=password1, avatar=avatar)
         session.add(new_user)
         session.commit()
         log('200')
