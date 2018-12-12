@@ -95,7 +95,7 @@ def login():
         user_exists = None
         try:
             user_exists = session.query(User).filter(
-                func.lower(username) == func.lower(username), password == password).first()
+                func.lower(User.username) == func.lower(username), User.password == password).first()
         except:
             pass
 
