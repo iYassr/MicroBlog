@@ -6,6 +6,7 @@ from flask import Flask, render_template, url_for, request, jsonify, redirect
 from flask import Response, session as login_session
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import func
 from database_setup import Base, User, Post, Comment, CommentLikes, PostLikes, Log
 from werkzeug import secure_filename
 import logging
@@ -88,13 +89,13 @@ def login():
         return render_template('login.html')
     if request.method == 'POST':
         log('302')
-        username = request.form.get('username')
+        username = request.form.get('username').lower()
         password = request.form.get('password')
 
         user_exists = None
         try:
-            user_exists = session.query(User).filter_by(
-                username=username, password=password).one()
+            user_exists = session.query(User).filter(
+                func.lower(username) == func.lower(username), password == password).first()
         except:
             pass
 
