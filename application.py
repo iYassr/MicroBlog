@@ -210,7 +210,7 @@ def main():
     if 'username' in login_session:
         username = login_session['username']
         email = login_session['email']
-        #user_id = login_session['id']
+        # user_id = login_session['id']
 
     return render_template('index.html', posts=posts, username=username, question_of_the_day=choice(QUESTION_OF_THE_DAY))
 
@@ -386,7 +386,6 @@ def edit_blog(post_id):
         return render_template('edit_blog.html', post=old_post)
     if request.method == 'POST':
         log('302')
-
         if 'username' not in login_session:
             return redirect(url_for('login'))
 
@@ -409,12 +408,16 @@ def edit_blog(post_id):
 def delete_blog(post_id):
     log('302')
     post_creator = session.query(Post).filter_by(id=post_id).one()
+
+    if 'username' not in login_session:
+        return redirect(url_for('login'))
     if login_session['id'] == post_creator.uid:
         deleted_post = session.query(Post).filter_by(id=post_id).one()
         session.delete(deleted_post)
         session.commit()
     else:
         return 'you dont have the right to delete other users posts'
+
     return redirect(url_for('main'))
 
 
