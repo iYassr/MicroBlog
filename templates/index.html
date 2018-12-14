@@ -10,7 +10,17 @@
   <body>
 
   <div class="container">
+    
+
+      <h5 class="alert alert-secondary text-center">Rank My Writing </h5>
       <h5 class="alert alert-secondary"> Welcome MR. {{username}} </h5>
+
+      <h1 class="alert alert-primary"> {{question_of_the_day}} </h3>
+      <form method="post" action="/blog/new">
+      <textarea name='content' rows=5 style="width:100%"> </textarea>
+      <input type="hidden" name="title" value="{{question_of_the_day}}"> 
+      <button type="submit"> submit post </button>
+      </form>
     
   {% for post in posts %}
       <div class="card my-2">

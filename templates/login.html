@@ -28,24 +28,95 @@ body {
     <title>Blogs</title>
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=font1|font2|etc" type="text/css">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-  </head>
+
+ </head>
   
   <body class="text-center bg-light">
   
+<div id="result"> test </div>
+
   <form method="POST" class="form">
   <input type="text" class="form-control mb-1" name="username" placeholder="Username" required> </input>
   <input type="password" class="form-control mb-1" name="password" placeholder="Password" required></input>
   <input type="checkbox" class="checkbox " name="remember-me" value="yes" > </input>
   <label> Remember Me</label>
   <button type="Submit" class="form-control btn btn-primary mb-2">Login</button>
-
  <p class="mt-3 mb-3 text-muted"> 2018-2019 </p>
+
+          <div id="signinButton">
+          <span class="g-signin"
+            data-scope="openid email"
+            data-clientid="435753814702-6c60iuk3ogicc1nak6npcaq27cg3uk66.apps.googleusercontent.com"
+            data-redirecturi="postmessage"
+            data-accesstype="offline"
+            data-cookiepolicy="single_host_origin"
+            data-callback="signInCallback"
+            data-onfailure="onFailure"
+            data-onsuccess="onSuccess"
+            data-approvalprompt="force">
+          </span>
+        </div>
+
+
  </form>
 
 
+
+<!-- GOOGLE PLUS SIGN IN-->
+
+
+
+<script>
+function onFailure(){
+
+  console.log('falied')
+}
+function onSuccess(){
+  console.log('success')
+}
+function signInCallback(authResult) {
+  if (authResult['code']) {
+    console.log('test')
+    // Hide the sign-in button now that the user is authorized
+    $('#signinButton').attr('style', 'display: none');
+    // Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the main restaurants page
+    $.ajax({
+      type: 'POST',
+      url: '/gconnect?state={{STATE}}',
+      processData: false,
+      data: authResult['code'],
+      contentType: 'application/octet-stream; charset=utf-8',
+      success: function(result) {
+        // Handle or verify the server response if necessary.
+        if (result) {
+          $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
+         setTimeout(function() {
+          window.location.href = "/";
+         }, 4000);
+      } else if (authResult['error']) {
+    console.log('There was an error: ' + authResult['error']);
+  } else {
+        $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+         }
+      }
+  }); } }
+</script>
+
+
+
+<!--END GOOGLE PLUS SIGN IN -->
+
+
+  <!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
+   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
+  </script>
+
+<script src="//apis.google.com/js/platform.js?onload=start"> </script>
+
+<!-- END PRE-REQUISITES FOR GOOGLE SIGN IN -->
+ 
 
   </body>
 </html>
