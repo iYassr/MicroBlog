@@ -215,14 +215,17 @@ def main():
     return render_template('index.html', posts=posts, username=username, question_of_the_day=choice(QUESTION_OF_THE_DAY))
 
 
-@app.route('/<int:pid>')
-@app.route('/post/<int:pid>')
-def get_post(pid):
+@app.route('/<int:post_id>')
+@app.route('/post/<int:post_id>')
+def get_post(post_id):
     log('200')
     post = None
     try:
         post = session.execute(
-            'select post.title,post.time_created,post.content, post.id, user.name from post inner join user on post.uid=user.id left join post_likes on post_likes.pid = post.id where ').fetchall()
+            'select post.title,post.time_created,post.content, post.id, user.name from post inner join user on post.uid=user.id left join post_likes on post_likes.pid = post.id where post.id == {}'.format(post_id)).fetchall()
+        comments = session.query(Comment).filter_by(pid=post_id).all()
+        comments = session.execute(
+            'select comment.comment, comment.uid,  comment.time_created, user.name from comment join user on comment.uid = user.id where pid = {}'.format(post_id))
     except Exception:
         pass
 
@@ -232,7 +235,7 @@ def get_post(pid):
         email = login_session['email']
         user_id = login_session['id']
 
-    return render_template('index.html', posts=posts, username=username, question_of_the_day=choice(QUESTION_OF_THE_DAY))
+    return render_template('post.html', posts=post, username=username, comments=comments, post_id=post_id)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -375,7 +378,7 @@ def new_comment(post_id):
         new_comment = Comment(uid=uid, pid=post_id,  comment=comment)
         session.add(new_comment)
         session.commit()
-        return redirect(url_for('main'))
+        return redirect(url_for('get_post', post_id=post_id))
 
 
 @app.route('/blog/<int:post_id>/edit', methods=['GET', 'POST'])

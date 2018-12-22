@@ -11,18 +11,18 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
-new_user = User(username='Yasserd99', name='Yasser', email='yasserd99@gmail.com', avatar='a',
+new_user = User(username='Yasserd9fasd9', name='Yasser', email='yaasserd99@gmaifl.com', avatar='a',
                 password='P@$$w0rd', bio='CS Student', phone_number='05050109865')
 session.add(new_user)
 session.commit()
 
-new_user = User(username='mohammed99', name='mohammed', email='mohmamed@gmail.com',
+new_user = User(username='mohammed43299', name='mohammed', email='maohmamed@gmafil.com',
                 password='P@$$w0rd', bio='Pentester ', phone_number='05143142341324')
 session.add(new_user)
 session.commit()
 
 
-new_user = User(username='saadkhan', name='saafdasd', email='dasafsdf@gmail.com',
+new_user = User(username='saadkhan', name='saafdasd', email='dasafdsfadsafsdf@gmail.com',
                 password='P@$$w0rd', bio='Accountatn ', phone_number='+23423423')
 session.add(new_user)
 session.commit()
